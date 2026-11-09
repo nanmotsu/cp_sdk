@@ -1,0 +1,44 @@
+{
+  "steps": [
+    {
+      "id": "step1",
+      "name": "構成の調査",
+      "model": "gpt-6-luna",
+      "prompt": "step1/prompt.md",
+      "verify": "step1/verify.md",
+      "passed": true
+    },
+    {
+      "id": "step2",
+      "name": "パイプライン定義の説明",
+      "model": "gpt-6-luna",
+      "prompt": "step2/prompt.md",
+      "verify": "step2/verify.md",
+      "passed": true
+    },
+    {
+      "id": "step3",
+      "name": "パイプライン実行処理の説明",
+      "model": "gpt-6-luna",
+      "prompt": "step3/prompt.md",
+      "verify": "step3/verify.md",
+      "passed": true
+    },
+    {
+      "id": "step4",
+      "name": "画面のステップ表示の説明",
+      "model": "gpt-6-luna",
+      "prompt": "step4/prompt.md",
+      "verify": "step4/verify.md",
+      "passed": false
+    },
+    {
+      "id": "step5",
+      "name": "テストと利用方法の説明",
+      "model": "gpt-6-luna",
+      "prompt": "step5/prompt.md",
+      "verify": "step5/verify.md",
+      "passed": false
+    }
+  ]
+}

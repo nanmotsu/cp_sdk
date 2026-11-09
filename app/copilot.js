@@ -1,5 +1,21 @@
 import { CopilotClient, approveAll } from "@github/copilot-sdk";
 
+let lastSessionNameTimestamp = "";
+let sameSecondSessionCount = 0;
+
+function createSessionName(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  const timestamp = [
+    pad(date.getFullYear() % 100),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+  ].join("") + `_${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+
+  sameSecondSessionCount = timestamp === lastSessionNameTimestamp ? sameSecondSessionCount + 1 : 1;
+  lastSessionNameTimestamp = timestamp;
+  return `SDK_${timestamp}${sameSecondSessionCount > 1 ? `_${sameSecondSessionCount}` : ""}`;
+}
+
 export class CopilotService {
   constructor(logger, client = new CopilotClient()) {
     this.client = client;
@@ -33,7 +49,7 @@ export class CopilotService {
 
   async createSession(model = "auto") {
     const session = await this.client.createSession({
-      ...this.config, model, name: "SDK demo",
+      ...this.config, model, name: createSessionName(),
     });
     return session;
   }

@@ -292,6 +292,9 @@ test("runs the requested pipeline range in one session, switches models per step
     assert.equal(results[1].stepId, "step2");
     assert.equal(results[1].model, "claude-sonnet-5.5");
     assert.equal(results[1].credits.totalCredits, 0.2);
+    const savedSteps = await (await fetch(base + "/api/pipeline")).json();
+    assert.equal(savedSteps[0].credits.totalCredits, 0.2);
+    assert.equal(savedSteps[1].credits.totalCredits, 0.2);
     assert.deepEqual(sent, ["step1 の指示", "step1 の検証", "step2 の指示", "step2 の検証"]);
     assert.equal(sessionCount, 1);
   }, await pipelineFixture());

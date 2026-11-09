@@ -81,6 +81,7 @@ function formatPipelineSteps(pipeline) {
     prompt: step.prompt,
     verify: step.verify,
     passed: step.passed === true,
+    ...(step.credits ? { credits: step.credits } : {}),
   }));
 }
 

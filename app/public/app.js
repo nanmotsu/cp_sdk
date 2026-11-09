@@ -49,6 +49,12 @@ function formatCredits(credits) {
   return `${value.toFixed(9).replace(/\.?0+$/, "")} cr`;
 }
 
+function formatSeconds(seconds) {
+  const value = Number(seconds);
+  if (!Number.isFinite(value)) return "—";
+  return `${value.toFixed(3).replace(/\.?0+$/, "")} 秒`;
+}
+
 function formatSessionLabel(session) {
   const summary = session.summary?.split(/\r?\n/)[0].slice(0, 42) || "概要なし";
   const client = session.client ? ` [${session.client}]` : "";
@@ -195,6 +201,9 @@ function App() {
   async function fetchPipeline() {
     const data = await getJson("/api/pipeline");
     setSteps(data);
+    setStepCredits(Object.fromEntries(data
+      .filter((step) => step.credits)
+      .map((step) => [step.id, step.credits])));
     setFromStep((prev) => (data.some((s) => s.id === prev) ? prev : data[0]?.id ?? ""));
     setToStep((prev) => (data.some((s) => s.id === prev) ? prev : data.at(-1)?.id ?? ""));
   }
@@ -338,7 +347,6 @@ function App() {
     setUnavailableModel(null);
     setPipelineStatus({ message: "pipeline.json のモデルを確認中…", error: false });
     setStepProgress({});
-    setStepCredits({});
     setCreditLogFile("");
 
     const phaseTurnIds = new Map();
@@ -561,6 +569,9 @@ function App() {
                 (実行 ${formatCredits(credits.promptCredits)} / 検証 ${formatCredits(credits.verifyCredits)})
               </span>
             `}
+            <span className="step-duration">
+              実行時間: ${isRunning ? "計測中…" : credits ? formatSeconds(credits.durationSeconds) : "—"}
+            </span>
           </div>
         </div>
         ${showConnector && html`

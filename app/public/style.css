@@ -513,6 +513,11 @@ select {
   color: #64748b;
 }
 
+.step-duration {
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
 .pipeline-connector {
   display: flex;
   align-items: center;

@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { resolve, sep } from "node:path";
 
@@ -75,10 +76,11 @@ function accumulateUsage(usage, phase, event) {
   }
 }
 
-function buildCredits(stepId, name, model, passed, usage) {
+function buildCredits(stepId, name, model, passed, usage, durationSeconds) {
   const totalNanoAiu = usage.promptNanoAiu + usage.verifyNanoAiu;
   return {
     timestamp: new Date().toISOString(),
+    durationSeconds,
     stepId,
     name,
     model,
@@ -110,6 +112,7 @@ export async function runPipeline({ send, setModel, recordCredits, from, to, dir
   onMessage({ type: "pipeline-start", stepIds: targets.map((step) => step.id) });
 
   for (const step of targets) {
+    const startedAt = performance.now();
     const name = step.name ?? step.id;
     const model = step.model?.trim() || "auto";
     if (setModel) await setModel(model);
@@ -128,9 +131,11 @@ export async function runPipeline({ send, setModel, recordCredits, from, to, dir
 
     await runPhase("prompt", step.prompt);
     step.passed = isPassed(await runPhase("verify", step.verify));
-    const credits = buildCredits(step.id, name, model, step.passed, usage);
+    const durationSeconds = Number(((performance.now() - startedAt) / 1000).toFixed(3));
+    const credits = buildCredits(step.id, name, model, step.passed, usage, durationSeconds);
+    step.credits = credits;
     if (recordCredits) await recordCredits(credits);
-    // 途中で止めても、ここまでの合否を pipeline.json に残す。
+    // 途中で止めても、ここまでの合否と消費クレジットを pipeline.json に残す。
     await writeFile(definitionFile(directory), JSON.stringify(pipeline, null, 2) + "\n", "utf8");
     onMessage({ type: "step-result", stepId: step.id, model, passed: step.passed, credits });
 

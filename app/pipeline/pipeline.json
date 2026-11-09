@@ -6,7 +6,24 @@
       "model": "gpt-6-luna",
       "prompt": "step1/prompt.md",
       "verify": "step1/verify.md",
-      "passed": true
+      "passed": false,
+      "credits": {
+        "timestamp": "2026-11-09T15:07:38.605Z",
+        "durationSeconds": 12.34,
+        "stepId": "step1",
+        "name": "構成の調査",
+        "model": "gpt-6-luna",
+        "passed": true,
+        "promptNanoAiu": 166518000,
+        "verifyNanoAiu": 29203500,
+        "totalNanoAiu": 195721500,
+        "promptCredits": 0.166518,
+        "verifyCredits": 0.0292035,
+        "totalCredits": 0.1957215,
+        "inputTokens": 62977,
+        "outputTokens": 434,
+        "calls": 3
+      }
     },
     {
       "id": "step2",
@@ -14,7 +31,24 @@
       "model": "gpt-6-luna",
       "prompt": "step2/prompt.md",
       "verify": "step2/verify.md",
-      "passed": true
+      "passed": true,
+      "credits": {
+        "timestamp": "2026-11-09T15:07:48.094Z",
+        "durationSeconds": 9.488,
+        "stepId": "step2",
+        "name": "パイプライン定義の説明",
+        "model": "gpt-6-luna",
+        "passed": true,
+        "promptNanoAiu": 99083000,
+        "verifyNanoAiu": 32422500,
+        "totalNanoAiu": 131505500,
+        "promptCredits": 0.099083,
+        "verifyCredits": 0.0324225,
+        "totalCredits": 0.1315055,
+        "inputTokens": 73833,
+        "outputTokens": 457,
+        "calls": 3
+      }
     },
     {
       "id": "step3",

@@ -147,3 +147,20 @@ test("new and resumed sessions use the selected model and shared streaming/permi
   assert.equal(resumed.value.model, "switched-model");
   assert.equal(resumed.value.streaming, true);
 });
+
+test("new sessions get unique timestamped names", async () => {
+  const names = [];
+  const service = new CopilotService({}, {
+    createSession: async (options) => {
+      names.push(options.name);
+      return { sessionId: `session-${names.length}` };
+    },
+  });
+
+  await service.createSession();
+  await service.createSession();
+
+  assert.notEqual(names[0], names[1]);
+  assert.match(names[0], /^SDK_\d{6}_\d{2}:\d{2}:\d{2}(?:_\d+)?$/);
+  assert.match(names[1], /^SDK_\d{6}_\d{2}:\d{2}:\d{2}(?:_\d+)?$/);
+});

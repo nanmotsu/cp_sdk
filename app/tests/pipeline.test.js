@@ -111,6 +111,8 @@ test("reports progress, per-step model, and consumed AI credits for each phase",
   assert.equal(creditRecords[0].promptCredits, 0.15);
   assert.equal(creditRecords[0].verifyCredits, 0.15);
   assert.equal(creditRecords[0].totalCredits, 0.3);
+  assert.ok(Number.isFinite(creditRecords[0].durationSeconds));
+  assert.ok(creditRecords[0].durationSeconds >= 0);
   assert.equal(creditRecords[0].totalNanoAiu, 300_000_000);
   assert.equal(creditRecords[0].inputTokens, 200);
   assert.equal(creditRecords[0].outputTokens, 40);
@@ -128,6 +130,30 @@ test("reports progress, per-step model, and consumed AI credits for each phase",
   assert.equal(resultMsg.model, "gpt-6-luna");
   assert.equal(resultMsg.passed, true);
   assert.equal(resultMsg.credits.totalCredits, 0.3);
+  assert.equal((await readSteps(directory))[0].credits.totalCredits, 0.3);
+});
+
+test("stores the latest credits in pipeline.json and overwrites them on rerun", async () => {
+  const directory = await fixture([twoSteps[0]], twoFiles);
+  const run = async (nanoAiu) => runPipeline({
+    directory,
+    send: async (_prompt, onEvent) => {
+      onEvent({
+        type: "assistant.usage",
+        data: { copilotUsage: { totalNanoAiu: nanoAiu } },
+      });
+      return "OK";
+    },
+  }, () => {});
+
+  await run(10_000_000);
+  assert.equal((await readSteps(directory))[0].credits.totalCredits, 0.02);
+  await run(20_000_000);
+  const [step] = await readSteps(directory);
+  assert.equal(step.credits.totalCredits, 0.04);
+  assert.equal(step.credits.promptCredits, 0.02);
+  assert.equal(step.credits.verifyCredits, 0.02);
+  assert.ok(Number.isFinite(step.credits.durationSeconds));
 });
 
 test("runs every configured step beyond the first two", async () => {
